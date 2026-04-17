@@ -1,15 +1,22 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { login } from "../features/authSlice";
-
+import { useEffect } from "react";
 const Login = () => {
     const navigate = useNavigate()
+    const {user,token}=useSelector(s=>s.Auth)
     const dispatch = useDispatch()
  const [form, setForm] = useState({
         email: '',
         password: ''
     })
+    useEffect(()=>{
+        if(user && token){
+            navigate('/home')
+        }
+    })
+
  const handleinput = (e) => {
         const { name, value } = e.target
         setForm((prev) => ({ ...prev, [name]: value }))

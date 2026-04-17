@@ -1,49 +1,51 @@
-    import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-    import axios from "axios";
-    import toast from "react-hot-toast";
-    const initialState = {
-        user: JSON.parse(sessionStorage.getItem('user')) || null,
-        token: JSON.parse(sessionStorage.getItem('token')) || null,
-        members:[],
-    
-        memberstatus:'idle',
-        assignstatus:'idle',
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import toast from "react-hot-toast";
+const initialState = {
+    user: JSON.parse(sessionStorage.getItem('user')) || null,
+    token: JSON.parse(sessionStorage.getItem('token')) || null,
+    status: 'success'
 
-        status: 'success'
-
-    }
-    export const login = createAsyncThunk("auth/login",async (form ,{rejectWithValue}) => {
+}
+export const login = createAsyncThunk("auth/login", async (form, { rejectWithValue }) => {
     try {
-        const res = await axios.post("http://localhost:5000/auth/login",form)
+        const res = await axios.post("http://localhost:5000/auth/login", form)
         return res.data
     } catch (error) {
         console.log(error)
         return rejectWithValue(error.response.data)
     }
-        
-    
-    }
-    );
-    export const register =createAsyncThunk('post/register',async(form,{rejectWithValue})=>{
-     try {
-           const res =await axios.post('http://localhost:5000/auth/register',form)
+
+
+}
+);
+export const register = createAsyncThunk('post/register', async (form, { rejectWithValue }) => {
+    try {
+        const res = await axios.post('http://localhost:5000/auth/register', form)
         return res.data
-     } catch (error) {
+    } catch (error) {
         console.log(error)
         return rejectWithValue(error.response.data)
-     }
-    })
-    const authSlice = createSlice({
-        name:'auth',
-        initialState,
-        reducers:{
+    }
+})
+const authSlice = createSlice({
+    name: 'auth',
+    initialState,
+    reducers: {
+              logout: (state) => {
+        state.user = null
+        state.token = null
+        state.status = 'success'
 
-        },
-        extraReducers(builder){
-            builder.addCase(register.pending, (state) => {
-                state.status = 'pending'
-            })
-        .addCase(register.fulfilled, (state, action) => {
+        sessionStorage.removeItem('user')
+        sessionStorage.removeItem('token')
+    }
+    },
+    extraReducers(builder) {
+        builder.addCase(register.pending, (state) => {
+            state.status = 'pending'
+        })
+            .addCase(register.fulfilled, (state, action) => {
                 state.status = 'success'
                 toast.success(action.payload.message)
 
@@ -54,11 +56,15 @@
                 toast.error(action.payload.message)
 
             })
-            builder.addCase(login.pending, (state) => {
-                state.status = 'pending'
-            })
-        .addCase(login.fulfilled, (state, action) => {
+        builder.addCase(login.pending, (state) => {
+            state.status = 'pending'
+        })
+            .addCase(login.fulfilled, (state, action) => {
                 state.status = 'success'
+                state.user = action.payload.currentuser
+                state.token = action.payload.token
+                sessionStorage.setItem('user', JSON.stringify(action.payload.currentuser))
+                sessionStorage.setItem('token', JSON.stringify(action.payload.token))
                 toast.success(action.payload.message)
 
 
@@ -68,8 +74,8 @@
                 toast.error(action.payload.message)
 
             })
-        
-        }
-    })
 
-    export default authSlice.reducer
+    }
+})
+export const { logout } = authSlice.actions
+export default authSlice.reducer

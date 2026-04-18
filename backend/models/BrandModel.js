@@ -1,15 +1,14 @@
 import mongoose from "mongoose";
 
-
-
 const brandSchema = mongoose.Schema({
-    name:{
+    brandname:{
         type:String,
         required:true
     },
     image:{
         type:String
-    }
+    },
+   
 
 })
 const BrandModel = mongoose.model('Brands',brandSchema)

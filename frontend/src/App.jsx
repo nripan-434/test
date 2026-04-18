@@ -5,13 +5,14 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home'
 import { Toaster } from 'react-hot-toast'
-import ProtectedRoutes from './pages/ProtectedRoutes'
+import ProtectedRoutes from './components/ProtectedRoutes'
 
 const App = () => {
   return (
     <div>
       <Toaster/>
       <Routes>
+        
         <Route path='/' element={<Landing/>}/>
         <Route path='/register' element={<Register/>}/>
         <Route path='/login' element={<Login/>}/>
